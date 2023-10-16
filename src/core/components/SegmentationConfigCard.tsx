@@ -33,12 +33,6 @@ function SegmentationConfigCard(props: SegmentationConfigCardProps) {
     let inputResolution = props.config.inputResolution
     let pipeline = props.config.pipeline
     switch (model) {
-      case 'bodyPix':
-        backend = 'webgl'
-        inputResolution = '640x360'
-        pipeline = 'canvas2dCpu'
-        break
-
       case 'meet':
         if (
           (backend !== 'wasm' && backend !== 'wasmSimd') ||
@@ -46,17 +40,6 @@ function SegmentationConfigCard(props: SegmentationConfigCardProps) {
         ) {
           backend = props.isSIMDSupported ? 'wasmSimd' : 'wasm'
           inputResolution = '160x96'
-          pipeline = 'webgl2'
-        }
-        break
-
-      case 'mlkit':
-        if (
-          (backend !== 'wasm' && backend !== 'wasmSimd') ||
-          inputResolution !== '256x256'
-        ) {
-          backend = props.isSIMDSupported ? 'wasmSimd' : 'wasm'
-          inputResolution = '256x256'
           pipeline = 'webgl2'
         }
         break
@@ -122,8 +105,6 @@ function SegmentationConfigCard(props: SegmentationConfigCardProps) {
               onChange={handleModelChange}
             >
               <MenuItem value="meet">Meet</MenuItem>
-              <MenuItem value="mlkit">ML Kit</MenuItem>
-              <MenuItem value="bodyPix">BodyPix</MenuItem>
             </Select>
           </FormControl>
           <FormControl className={classes.formControl} variant="outlined">
@@ -133,25 +114,9 @@ function SegmentationConfigCard(props: SegmentationConfigCardProps) {
               value={props.config.backend}
               onChange={handleBackendChange}
             >
-              <MenuItem
-                value="wasm"
-                disabled={props.config.model === 'bodyPix'}
-              >
-                WebAssembly
-              </MenuItem>
-              <MenuItem
-                value="wasmSimd"
-                disabled={
-                  props.config.model === 'bodyPix' || !props.isSIMDSupported
-                }
-              >
+              <MenuItem value="wasm">WebAssembly</MenuItem>
+              <MenuItem value="wasmSimd" disabled={!props.isSIMDSupported}>
                 WebAssembly SIMD
-              </MenuItem>
-              <MenuItem
-                value="webgl"
-                disabled={props.config.model !== 'bodyPix'}
-              >
-                WebGL
               </MenuItem>
             </Select>
           </FormControl>
@@ -162,18 +127,6 @@ function SegmentationConfigCard(props: SegmentationConfigCardProps) {
               value={props.config.inputResolution}
               onChange={handleInputResolutionChange}
             >
-              <MenuItem
-                value="640x360"
-                disabled={props.config.model !== 'bodyPix'}
-              >
-                640x360
-              </MenuItem>
-              <MenuItem
-                value="256x256"
-                disabled={props.config.model !== 'mlkit'}
-              >
-                256x256
-              </MenuItem>
               <MenuItem
                 value="256x144"
                 disabled={props.config.model !== 'meet'}
@@ -192,12 +145,7 @@ function SegmentationConfigCard(props: SegmentationConfigCardProps) {
               value={props.config.pipeline}
               onChange={handlePipelineChange}
             >
-              <MenuItem
-                value="webgl2"
-                disabled={props.config.model === 'bodyPix'}
-              >
-                WebGL 2
-              </MenuItem>
+              <MenuItem value="webgl2">WebGL 2</MenuItem>
               <MenuItem value="canvas2dCpu">Canvas 2D + CPU</MenuItem>
             </Select>
           </FormControl>

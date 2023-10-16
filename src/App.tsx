@@ -12,7 +12,6 @@ import {
 import { PostProcessingConfig } from './core/helpers/postProcessingHelper'
 import { SegmentationConfig } from './core/helpers/segmentationHelper'
 import { SourceConfig, sourceImageUrls } from './core/helpers/sourceHelper'
-import useBodyPix from './core/hooks/useBodyPix'
 import useTFLite from './core/hooks/useTFLite'
 
 function App() {
@@ -42,7 +41,6 @@ function App() {
       lightWrapping: 0.3,
       blendMode: 'screen',
     })
-  const bodyPix = useBodyPix()
   const { tflite, isSIMDSupported } = useTFLite(segmentationConfig)
 
   useEffect(() => {
@@ -62,7 +60,6 @@ function App() {
         backgroundConfig={backgroundConfig}
         segmentationConfig={segmentationConfig}
         postProcessingConfig={postProcessingConfig}
-        bodyPix={bodyPix}
         tflite={tflite}
       />
       <SourceConfigCard config={sourceConfig} onChange={setSourceConfig} />

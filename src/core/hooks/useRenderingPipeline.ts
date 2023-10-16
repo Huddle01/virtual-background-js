@@ -1,6 +1,4 @@
-import { BodyPix } from '@tensorflow-models/body-pix'
 import { useEffect, useRef, useState } from 'react'
-import { buildCanvas2dPipeline } from '../../pipelines/canvas2d/canvas2dPipeline'
 import { buildWebGL2Pipeline } from '../../pipelines/webgl2/webgl2Pipeline'
 import { createTimerWorker } from '../../shared/helpers/timerHelper'
 import { BackgroundConfig } from '../helpers/backgroundHelper'
@@ -13,7 +11,6 @@ function useRenderingPipeline(
   sourcePlayback: SourcePlayback,
   backgroundConfig: BackgroundConfig,
   segmentationConfig: SegmentationConfig,
-  bodyPix: BodyPix,
   tflite: TFLite
 ) {
   const [pipeline, setPipeline] = useState<RenderingPipeline | null>(null)
@@ -35,27 +32,16 @@ function useRenderingPipeline(
 
     const timerWorker = createTimerWorker()
 
-    const newPipeline =
-      segmentationConfig.pipeline === 'webgl2'
-        ? buildWebGL2Pipeline(
-            sourcePlayback,
-            backgroundImageRef.current,
-            backgroundConfig,
-            segmentationConfig,
-            canvasRef.current,
-            tflite,
-            timerWorker,
-            addFrameEvent
-          )
-        : buildCanvas2dPipeline(
-            sourcePlayback,
-            backgroundConfig,
-            segmentationConfig,
-            canvasRef.current,
-            bodyPix,
-            tflite,
-            addFrameEvent
-          )
+    const newPipeline = buildWebGL2Pipeline(
+      sourcePlayback,
+      backgroundImageRef.current,
+      backgroundConfig,
+      segmentationConfig,
+      canvasRef.current,
+      tflite,
+      timerWorker,
+      addFrameEvent
+    )
 
     async function render() {
       const startTime = performance.now()
@@ -117,7 +103,7 @@ function useRenderingPipeline(
 
       setPipeline(null)
     }
-  }, [sourcePlayback, backgroundConfig, segmentationConfig, bodyPix, tflite])
+  }, [sourcePlayback, backgroundConfig, segmentationConfig, tflite])
 
   return {
     pipeline,
