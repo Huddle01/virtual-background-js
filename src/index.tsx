@@ -3,14 +3,13 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-import Viewer from './Viewer'
 
 const root = createRoot(document.getElementById('root')!)
 
 root.render(
   <React.StrictMode>
     <CssBaseline />
-    {/\/viewer\/?$/.test(window.location.pathname) ? <Viewer /> : <App />}
+    <App />
   </React.StrictMode>
 )
 

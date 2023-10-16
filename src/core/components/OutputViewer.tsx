@@ -37,48 +37,6 @@ function OutputViewer(props: OutputViewerProps) {
     }
   }, [pipeline, props.postProcessingConfig])
 
-  useEffect(() => {
-    const peerConnection = new RTCPeerConnection()
-    const signalingChannel = new BroadcastChannel('signaling-channel')
-
-    const localStream = canvasRef.current.captureStream()
-    localStream.getTracks().forEach((track) => {
-      peerConnection.addTrack(track, localStream)
-    })
-
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log('Sending callee ICE candidate')
-        signalingChannel.postMessage(
-          JSON.stringify({ iceCandidate: event.candidate })
-        )
-      }
-    }
-
-    signalingChannel.onmessage = async (event) => {
-      const message = JSON.parse(event.data)
-
-      if (message.offer) {
-        console.log('Received offer')
-        const remoteDesc = new RTCSessionDescription(message.offer)
-        await peerConnection.setRemoteDescription(remoteDesc)
-
-        console.log('Sending answer')
-        const answer = await peerConnection.createAnswer()
-        await peerConnection.setLocalDescription(answer)
-        signalingChannel.postMessage(JSON.stringify({ answer }))
-      } else if (message.iceCandidate) {
-        console.log('Received caller ICE candidate')
-        await peerConnection.addIceCandidate(message.iceCandidate)
-      }
-    }
-
-    return () => {
-      peerConnection.close()
-      signalingChannel.close()
-    }
-  }, [canvasRef])
-
   const statDetails = [
     `resizing ${resizingDuration}ms`,
     `inference ${inferenceDuration}ms`,
